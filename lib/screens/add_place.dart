@@ -38,7 +38,7 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
           ).textTheme.bodyLarge!.copyWith(color: Colors.white),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           spacing: 8.0,
