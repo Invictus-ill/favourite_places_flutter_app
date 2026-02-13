@@ -1,11 +1,10 @@
 import 'package:favourite_places_flutter_app/models/place.dart';
 import 'package:favourite_places_flutter_app/providers/places_notifier.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddPlaceScreen extends ConsumerStatefulWidget {
-  AddPlaceScreen({super.key});
+  const AddPlaceScreen({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -28,6 +27,7 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
     super.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
