@@ -18,10 +18,12 @@ class _ImageInputState extends State<ImageInput> {
       decoration: BoxDecoration(border: BoxBorder.all()),
       height: 250,
       width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: _takePicture,
-        label: Text('Take Picture'),
-        icon: Icon(Icons.camera),
+      child: Center(
+        child: ElevatedButton.icon(
+          onPressed: _takePicture,
+          label: Text('Take Picture'),
+          icon: Icon(Icons.camera),
+        ),
       ),
     );
   }
