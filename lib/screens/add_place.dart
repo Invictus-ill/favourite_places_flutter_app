@@ -1,5 +1,6 @@
 import 'package:favourite_places_flutter_app/models/place.dart';
 import 'package:favourite_places_flutter_app/providers/places_notifier.dart';
+import 'package:favourite_places_flutter_app/widgets/image_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,6 +51,7 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
               controller: _titleFieldController,
               decoration: InputDecoration(hintText: 'Title'),
             ),
+            ImageInput(),
             TextButton.icon(
               onPressed: () {
                 ref
