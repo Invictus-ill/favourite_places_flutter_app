@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:favourite_places_flutter_app/models/place.dart';
 import 'package:favourite_places_flutter_app/providers/places_notifier.dart';
 import 'package:favourite_places_flutter_app/widgets/image_input.dart';
@@ -15,6 +17,11 @@ class AddPlaceScreen extends ConsumerStatefulWidget {
 
 class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
   late TextEditingController _titleFieldController;
+  File? _selectedImage;
+
+  void onSelectImage(File image) {
+    _selectedImage = image;
+  }
 
   @override
   initState() {
@@ -51,7 +58,7 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
               controller: _titleFieldController,
               decoration: InputDecoration(hintText: 'Title'),
             ),
-            ImageInput(),
+            ImageInput(onSelectImage: onSelectImage),
             TextButton.icon(
               onPressed: () {
                 ref
@@ -60,6 +67,7 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
                       Place(
                         id: DateTime.now().toString(),
                         title: _titleFieldController.text,
+                        image: _selectedImage,
                       ),
                     );
                 Navigator.pop(context);
