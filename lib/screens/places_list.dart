@@ -25,17 +25,31 @@ class PlacesListScreen extends ConsumerWidget {
     if (placesList.isNotEmpty) {
       content = ListView.builder(
         itemBuilder: (ctx, index) {
-          return ListTile(
-            title: Text(
-              placesList[index].title,
-              style: Theme.of(
-                ctx,
-              ).textTheme.bodyLarge!.copyWith(color: Colors.white),
-            ),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (ctx) => PlaceDetails(place: placesList[index]),
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListTile(
+              leading: CircleAvatar(
+                radius: 26,
+                backgroundImage: FileImage(placesList[index].image!),
+              ),
+              title: Text(
+                placesList[index].title,
+                style: Theme.of(ctx).textTheme.bodyLarge!.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Text(
+                placesList[index].location.address,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium!.copyWith(color: Colors.white),
+              ),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (ctx) => PlaceDetails(place: placesList[index]),
+                ),
               ),
             ),
           );
