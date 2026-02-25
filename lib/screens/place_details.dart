@@ -1,6 +1,9 @@
 import 'package:favourite_places_flutter_app/models/place.dart';
+import 'package:favourite_places_flutter_app/screens/map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+const apiKey = String.fromEnvironment('GOOGLE_MAPS_API_KEY');
 
 class PlaceDetails extends ConsumerWidget {
   const PlaceDetails({super.key, required this.place});
@@ -11,7 +14,7 @@ class PlaceDetails extends ConsumerWidget {
     final lat = place.location.latitude;
     final lon = place.location.longitude;
 
-    return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lon&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:C%7C$lat,$lon&key=<key>';
+    return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lon&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:C%7C$lat,$lon&key=$apiKey';
   }
 
   @override
@@ -33,9 +36,19 @@ class PlaceDetails extends ConsumerWidget {
             child: Column(
               spacing: 16.0,
               children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(locationImage),
-                  radius: 64.0,
+                GestureDetector(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => MapScreen(
+                        isSelecting: false,
+                        location: place.location,
+                      ),
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(locationImage),
+                    radius: 64.0,
+                  ),
                 ),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
