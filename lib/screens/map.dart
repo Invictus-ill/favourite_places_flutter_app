@@ -19,6 +19,8 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapsScreenState extends State<MapScreen> {
+  LatLng? _pickedLocation;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,24 +28,42 @@ class _MapsScreenState extends State<MapScreen> {
         title: Text(widget.isSelecting ? 'Pick a Place' : 'Your place'),
         actions: [
           if (widget.isSelecting)
-            IconButton(onPressed: () {}, icon: Icon(Icons.save)),
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).pop(_pickedLocation);
+              },
+              icon: Icon(Icons.save),
+            ),
         ],
       ),
       body: GoogleMap(
+        onTap: widget.isSelecting
+            ? (position) {
+                setState(() {
+                  _pickedLocation = position;
+                });
+              }
+            : (postion) {
+                //Do not allow for selection of position on map if just viewing the location
+              },
         initialCameraPosition: CameraPosition(
           target: LatLng(widget.location.latitude, widget.location.longitude),
           zoom: 16,
         ),
 
-        markers: {
-          Marker(
-            markerId: const MarkerId('m1'),
-            position: LatLng(
-              widget.location.latitude,
-              widget.location.longitude,
-            ),
-          ),
-        },
+        markers: (_pickedLocation == null && widget.isSelecting)
+            ? {}
+            : {
+                Marker(
+                  markerId: const MarkerId('m1'),
+                  position: _pickedLocation == null
+                      ? LatLng(
+                          widget.location.latitude,
+                          widget.location.longitude,
+                        )
+                      : _pickedLocation!,
+                ),
+              },
       ),
     );
   }

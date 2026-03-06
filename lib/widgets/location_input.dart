@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:favourite_places_flutter_app/models/place.dart';
+import 'package:favourite_places_flutter_app/screens/map.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,6 +29,44 @@ class _LocationInputState extends State<LocationInput> {
     final lon = _pickedLocation!.longitude;
 
     return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lon&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:C%7C$lat,$lon&key=$apiKey';
+  }
+
+  Future<void> _savePlace(double latitude, double longitude) async {
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey',
+    );
+
+    String address = 'Unknown location';
+
+    try {
+      final response = await http.get(url);
+      final resData = json.decode(response.body);
+
+      // make sure the response contains at least one result before accessing it
+      if (resData != null &&
+          resData['status'] == 'OK' &&
+          resData['results'] != null &&
+          (resData['results'] is List &&
+              (resData['results'] as List).isNotEmpty)) {
+        address = resData['results'][0]['formatted_address'];
+      }
+    } catch (error) {
+      // silently ignore; we'll just keep the placeholder address
+      debugPrint('geocoding failed: $error');
+    }
+
+    final loc = PlaceLocation(
+      latitude: latitude,
+      longitude: longitude,
+      address: address,
+    );
+
+    setState(() {
+      _pickedLocation = loc;
+      _isGettingLocation = false;
+    });
+
+    widget.onSelectLocation(loc);
   }
 
   void _getCurrentLocation() async {
@@ -62,27 +102,15 @@ class _LocationInputState extends State<LocationInput> {
       return;
     }
 
-    final url = Uri.parse(
-      'https://maps.googleapis.com/maps/api/geocode/json?latlng=${locationData.latitude},${locationData.longitude}&key=$apiKey',
-    );
+    _savePlace(locationData.latitude!, locationData.longitude!);
+  }
 
-    final response = await http.get(url);
-
-    final resData = json.decode(response.body);
-
-    final address =
-        resData['results'][0]['formatted_address']; //Response documentation: https://developers.google.com/maps/documentation/geocoding/requests-reverse-geocoding
-
-    setState(() {
-      _pickedLocation = PlaceLocation(
-        latitude: locationData.latitude!,
-        longitude: locationData.longitude!,
-        address: address,
-      );
-      _isGettingLocation = false;
-    });
-
-    widget.onSelectLocation(_pickedLocation!);
+  void _selectOnMap() async {
+    final pickedLocation = await Navigator.of(
+      context,
+    ).push<LatLng>(MaterialPageRoute(builder: (ctx) => MapScreen()));
+    if (pickedLocation == null) return;
+    _savePlace(pickedLocation.latitude, pickedLocation.longitude);
   }
 
   @override
@@ -125,7 +153,7 @@ class _LocationInputState extends State<LocationInput> {
               icon: Icon(Icons.location_on),
             ),
             TextButton.icon(
-              onPressed: () {},
+              onPressed: _selectOnMap,
               label: Text('Get location on Map'),
               icon: Icon(Icons.map),
             ),
