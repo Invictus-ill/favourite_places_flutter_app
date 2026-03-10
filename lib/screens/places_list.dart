@@ -5,11 +5,26 @@ import 'package:favourite_places_flutter_app/screens/place_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PlacesListScreen extends ConsumerWidget {
+class PlacesListScreen extends ConsumerStatefulWidget {
   const PlacesListScreen({super.key});
 
   @override
-  Widget build(context, ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _PlacesListScreenState();
+  }
+}
+
+class _PlacesListScreenState extends ConsumerState<PlacesListScreen> {
+  late Future<void> _placesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _placesFuture = ref.read(placesProvider.notifier).loadPlaces();
+  }
+
+  @override
+  Widget build(context) {
     //Question: Does this have to be in the build method or would a rebuild be triggered even if it is outside the build method ?
     final List<Place> placesList = ref.watch<List<Place>>(placesProvider);
 
@@ -73,7 +88,14 @@ class PlacesListScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: content,
+      body: FutureBuilder(
+        future: _placesFuture,
+        builder: (ctx, snapshot) {
+          return snapshot.connectionState == ConnectionState.waiting
+              ? const Center(child: CircularProgressIndicator())
+              : content;
+        },
+      ),
     );
   }
 }
